@@ -1,0 +1,198 @@
+<html><head><base href="." />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do List</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(120deg, #f6d365 0%, #fda085 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+    
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            width: 100%;
+            max-width: 500px;
+            margin-top: 2rem;
+        }
+    
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+    
+        .input-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 1.5rem;
+        }
+    
+        input[type="text"] {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+    
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #fda085;
+        }
+    
+        button {
+            background: #fda085;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.3s;
+        }
+    
+        button:hover {
+            background: #f6d365;
+            transform: translateY(-2px);
+        }
+    
+        .todo-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            background: white;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            animation: slideIn 0.3s ease-out;
+        }
+    
+        @keyframes slideIn {
+            from {
+                transform: translateX(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+    
+        .todo-item.completed {
+            background: #f8f9fa;
+            text-decoration: line-through;
+            color: #6c757d;
+        }
+    
+        .todo-text {
+            flex: 1;
+            margin: 0 12px;
+        }
+    
+        .delete-btn {
+            background: #ff6b6b;
+            padding: 8px 12px;
+            font-size: 14px;
+        }
+    
+        .checkbox {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+    
+        .empty-state {
+            text-align: center;
+            color: #6c757d;
+            padding: 2rem;
+        }
+    </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>✨ I Don't Want To Work ✨</h1>
+            <div class="input-container">
+                <input type="text" id="todoInput" placeholder="Add a new task...">
+                <button onclick="addTodo()">Add</button>
+            </div>
+            <div id="todoList"></div>
+        </div>
+    
+    <script>
+    let todos = [];
+    
+    function addTodo() {
+        const input = document.getElementById('todoInput');
+        const text = input.value.trim();
+        
+        if (text) {
+            const todo = {
+                id: Date.now(),
+                text: text,
+                completed: false
+            };
+            
+            todos.push(todo);
+            renderTodos();
+            input.value = '';
+        }
+    }
+    
+    function deleteTodo(id) {
+        todos = todos.filter(todo => todo.id !== id);
+        renderTodos();
+    }
+    
+    function toggleTodo(id) {
+        todos = todos.map(todo => 
+            todo.id === id ? {...todo, completed: !todo.completed} : todo
+        );
+        renderTodos();
+    }
+    
+    function renderTodos() {
+        const todoList = document.getElementById('todoList');
+        
+        if (todos.length === 0) {
+            todoList.innerHTML = `
+                <div class="empty-state">
+                    <p>No tasks yet! Add one above to get started.</p>
+                </div>
+            `;
+            return;
+        }
+        
+        todoList.innerHTML = todos.map(todo => `
+            <div class="todo-item ${todo.completed ? 'completed' : ''}" id="todo-${todo.id}">
+                <input 
+                    type="checkbox" 
+                    class="checkbox" 
+                    ${todo.completed ? 'checked' : ''} 
+                    onchange="toggleTodo(${todo.id})"
+                >
+                <span class="todo-text">${todo.text}</span>
+                <button class="delete-btn" onclick="deleteTodo(${todo.id})">Delete</button>
+            </div>
+        `).join('');
+    }
+    
+    // Add ability to press Enter to add todo
+    document.getElementById('todoInput').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            addTodo();
+        }
+    });
+    
+    // Initial render
+    renderTodos();
+    </script>
+    </body></html>
